@@ -1,0 +1,12 @@
+<launch>
+	<param name="/use_sim_time" value="true"/>
+	
+	<node pkg="stage_ros" type="stageros" name="stageros" args="$(find stage)/stage/neuq_practice_space.world">
+		<remap from="base_scan" to="scan"/>
+  	</node>
+	
+	<node  pkg="key_teleop" type="key_teleop.py" name="key_teleop" output="screen"/>
+
+	<!--mouse_control-->
+	<!--<include file="$(find mouse_teleop)/launch/mouse_teleop.launch"/>-->
+</launch>
