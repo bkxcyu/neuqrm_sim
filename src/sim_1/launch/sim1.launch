@@ -1,0 +1,30 @@
+<launch>
+    <!--load stage sim env-->
+    <include file="$(find stage)/launch/neuq_practice_space.launch"/>
+
+    <!--load map-->
+	<node name="map_server" pkg="map_server" type="map_server" args="$(find stage)/maps/race.yaml" output="screen">
+                <param name="frame_id" value="map"/>
+	</node>
+    <!--load odoms-->
+        <!--laser odom-->
+        <include file="$(find sim_1)/cfg/rf2o.launch.xml" />
+        <!--sim odom-->
+
+    <!--amcl-->
+    <include file="$(find sim_1)/cfg/amcl.launch">
+    </include>
+
+  <!--<include file="$(find sim_1)/cfg/move_base.xml" />-->
+
+    <!--ekc-->
+    <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization"> 
+        <!--<remap from="odometry/filtered" to="odom" />-->
+        <rosparam command="load" file="$(find sim_1)/cfg/robot_localization.yaml" />
+    </node>
+
+    <!--  **************** Visualisation ****************  -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find sim_1)/cfg/rviz_navigation.rviz"/>
+
+
+</launch>
