@@ -1,0 +1,56 @@
+include "robots/multi-agent.inc"
+
+
+define floorplan model
+(
+  # sombre, sensible, artistic
+  color "gray30"
+
+  # most maps will need a bounding box
+  boundary 1
+
+  gui_nose 0
+  gui_grid 0
+  gui_outline 0
+  gripper_return 1
+  fiducial_return 1
+  laser_return 1
+)
+
+resolution 0.02
+interval_sim 1  # simulation timestep in milliseconds
+
+window
+(
+  size [ 600 644 ]
+  center [ 5.015 4.927 ]
+  rotate [ 4.000 0.000 ]
+  scale 54.545
+)
+
+floorplan
+(
+  name "maze"
+  bitmap "../maps/neuq_practice_space.png"
+  size [ 10.000 10.000 2.000 ]
+  pose [  5.000  5.000 0.000 0.000 ]
+)
+
+# throw in a robot
+multi-agent
+(
+  pose [ 2.747 3.342 0.000 88.809 ]
+  name "agent0"
+)
+
+multi-agent
+(
+  pose [ 3.098 4.080 0.000 88.809 ]
+  name "agent1"
+)
+
+multi-agent
+(
+  pose [ 3.410 3.371 0.000 88.809 ]
+  name "agent2"
+)

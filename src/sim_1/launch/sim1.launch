@@ -3,7 +3,7 @@
     <include file="$(find stage)/launch/neuq_practice_space.launch"/>
 
     <!--load map-->
-	<node name="map_server" pkg="map_server" type="map_server" args="$(find stage)/maps/race.yaml" output="screen">
+	<node name="map_server" pkg="map_server" type="map_server" args="$(find stage)/maps/neuq_practice_space.yaml" output="screen">
                 <param name="frame_id" value="map"/>
 	</node>
     <!--load odoms-->
