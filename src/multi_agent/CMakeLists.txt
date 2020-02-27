@@ -37,6 +37,23 @@ find_package(catkin REQUIRED)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   geometry_msgs
+#  angles
+#  base_local_planner
+#  cmake_modules
+#  costmap_2d
+#  dynamic_reconfigure
+#  eband_local_planner
+#  geometry_msgs
+  nav_core
+  nav_msgs
+#  pluginlib
+#  roscpp
+  tf
+  tf_conversions
+  sensor_msgs
+  std_msgs
+  visualization_msgs
+#  costmap_converter
 )
 ##   * add "message_runtime" and every package in MSG_DEP_SET to
 ##     catkin_package(CATKIN_DEPENDS ...)
@@ -221,3 +238,46 @@ add_dependencies(FormationControl_sub ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catk
 target_link_libraries(FormationControl_sub
   ${catkin_LIBRARIES}
 )
+
+# add_library(pose_se2
+#   include/multi_agent/pose_se2.h
+# )
+# # add_dependencies(pose_se2 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# target_link_libraries(pose_se2
+#   ${catkin_LIBRARIES}
+# )
+
+## C++11 support
+## Unfortunately, the 3d-party dependency libg2o requires c++11 starting from ROS Jade.
+## Even if the ROS Jade specifications do not want c++11-only packages,
+## we cannot compile without c++11 enabled. Another option would be to downgrade  
+## libg2o third-party package.
+## By now, if you do not want c++11, please refer to the ros indigo version.
+IF(NOT MSVC)
+  include(CheckCXXCompilerFlag)
+  CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+  CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+if(COMPILER_SUPPORTS_CXX11)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+elseif(COMPILER_SUPPORTS_CXX0X)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+else()
+  message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support which is required 
+  by linked third party packages starting from ROS Jade. Ignore this message for ROS Indigo.")
+endif()
+endif()
+
+# Eigen3 FindScript Backward compatibility (ubuntu saucy)
+# Since FindEigen.cmake is deprecated starting from jade.
+if (EXISTS "FindEigen3.cmake")
+  find_package(Eigen3 REQUIRED)
+  set(Eigen_INCLUDE_DIRS ${Eigen3_INCLUDE_DIRS})
+elseif (EXISTS "FindEigen.cmake")
+  find_package(Eigen REQUIRED)
+elseif (EXISTS "FindEigen.cmake")
+  message(WARNING "No findEigen cmake script found. You must provde one of them,
+  e.g. by adding it to ${PROJECT_SOURCE_DIR}/cmake_modules.")
+endif (EXISTS "FindEigen3.cmake")
+
+set(EXTERNAL_INCLUDE_DIRS ${Eigen_INCLUDE_DIRS} ${SUITESPARSE_INCLUDE_DIRS} ${G2O_INCLUDE_DIR})
+set(EXTERNAL_LIBS ${SUITESPARSE_LIBRARIES} ${G2O_LIBRARIES})
