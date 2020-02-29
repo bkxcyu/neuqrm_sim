@@ -215,6 +215,15 @@ public:
     pose.position.z = 0;
     pose.orientation = tf::createQuaternionMsgFromYaw(_theta);
   }
+
+  geometry_msgs::Point toPointMsg() const
+  {
+    geometry_msgs::Point pointMsg;
+    pointMsg.x = _position.x();
+    pointMsg.y = _position.y();
+    pointMsg.z = _theta;
+    return pointMsg;
+  }
   
   /**
    * @brief Return the unit vector of the current orientation

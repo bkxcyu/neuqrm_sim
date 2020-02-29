@@ -1,5 +1,5 @@
 <launch>
-    <!--gazebo-->
+    <!--load world-->
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="world_name" value="$(find omni_gazebo)/worlds/clearpath_playpen.world"/>
         <arg name="paused" value="false"/>
@@ -8,28 +8,32 @@
         <arg name="headless" value="false"/>
         <arg name="debug" value="false"/>
     </include>
-
+    <!--load global formation publisher-->
+    <node  pkg="multi_agent" type="global_formation_publisher" name="global_formation_publisher"  >
+        <param name="group_size" value="3"/>　
+        <param name="test_mode" value="ture"/>
+    </node>
     <!-- Spawn simulated agents -->
     <include file="$(find omni_gazebo)/launch/omni_world.launch">
         <arg name="agent_name" value="agent0" />
-        <arg name="test_x" value="7.0" />
-        <arg name="test_y" value="5.0" />
-        <arg name="init_x" value="0.0" />
-        <arg name="init_y" value="0.0" />
+        <arg name="test_x" value="8.0" />
+        <arg name="test_y" value="8.0" />
+        <arg name="init_x" value="-8.0" />
+        <arg name="init_y" value="1.0" />
     </include>
     <include file="$(find omni_gazebo)/launch/omni_world.launch">
         <arg name="agent_name" value="agent1" />
-        <arg name="test_x" value="6.0" />
-        <arg name="test_y" value="6.0" />
-        <arg name="init_x" value="1.0" />
+        <arg name="test_x" value="9.0" />
+        <arg name="test_y" value="8.0" />
+        <arg name="init_x" value="-8.0" />
         <arg name="init_y" value="0.0" />
     </include>
     <include file="$(find omni_gazebo)/launch/omni_world.launch">
         <arg name="agent_name" value="agent2" />
-        <arg name="test_x" value="7.0" />
-        <arg name="test_y" value="7.0" />
-        <arg name="init_x" value="2.0" />
-        <arg name="init_y" value="0.0" />
+        <arg name="test_x" value="10.0" />
+        <arg name="test_y" value="8.0" />
+        <arg name="init_x" value="-8.0" />
+        <arg name="init_y" value="-1.0" />
     </include>
-    
+
 </launch>

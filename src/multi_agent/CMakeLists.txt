@@ -65,6 +65,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## Generate messages in the 'msg' folder
 add_message_files(FILES
+  data.msg
   group_global_goal.msg
 )
 
@@ -84,6 +85,7 @@ add_message_files(FILES
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(DEPENDENCIES
+  std_msgs
   # std_msgs
   geometry_msgs
 )
@@ -232,22 +234,6 @@ target_link_libraries(FormationControl_pub
   ${catkin_LIBRARIES}
 )
 
-add_executable(FormationControl_sub
-  src/FormationControl_sub.cpp
-)
-add_dependencies(FormationControl_sub ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(FormationControl_sub
-  ${catkin_LIBRARIES}
-)
-
-# add_library(pose_se2
-#   include/multi_agent/pose_se2.h
-# )
-# # add_dependencies(pose_se2 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-# target_link_libraries(pose_se2
-#   ${catkin_LIBRARIES}
-# )
-
 ## C++11 support
 ## Unfortunately, the 3d-party dependency libg2o requires c++11 starting from ROS Jade.
 ## Even if the ROS Jade specifications do not want c++11-only packages,
@@ -282,3 +268,12 @@ endif (EXISTS "FindEigen3.cmake")
 
 set(EXTERNAL_INCLUDE_DIRS ${Eigen_INCLUDE_DIRS} ${SUITESPARSE_INCLUDE_DIRS} ${G2O_INCLUDE_DIR})
 set(EXTERNAL_LIBS ${SUITESPARSE_LIBRARIES} ${G2O_LIBRARIES})
+
+
+add_executable(global_formation_publisher
+  src/global_formation_publisher.cpp
+)
+add_dependencies(global_formation_publisher ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(global_formation_publisher
+  ${catkin_LIBRARIES}
+)
