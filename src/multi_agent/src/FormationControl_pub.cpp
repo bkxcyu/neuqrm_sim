@@ -15,10 +15,11 @@
 #include <nav_msgs/Odometry.h>
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
+#include "multi_agent/path_tracking.h"
 
-using namespace multi_agent;
+// using namespace multi_agent;
 using namespace Eigen;
-
+namespace multi_agent{
 class FormationController
 {
 public:
@@ -28,19 +29,24 @@ public:
 	void agent_poseCB(const nav_msgs::Odometry::ConstPtr& pose,const int& id);
 	void agent_poseCB(const nav_msgs::Odometry& pose);
 	PoseSE2 calculate_interaction_sum();
+	PoseSE2 calculate_center_pose();
 private:
 	ros::NodeHandle n;
 	ros::Publisher cmd_pub;
 	ros::Publisher data_pub;
+	ros::Publisher center_odom_pub;;
 	ros::Subscriber local_goal_sub;
 	ros::Subscriber group_global_goal_sub;
 	std::vector<ros::Subscriber> agent_pose_subs;
 	ros::Subscriber sub_test;
 	ros::Time current_time, last_time;
 	PoseSE2 agent_pose;
+	nav_msgs::Odometry agent_pose_nav;
 	PoseSE2 local_goal;
 	MatrixXd group_global_goal;
 	MatrixXd all_agent_poses;
+
+	boost::shared_ptr<Path_tracking> path_tracking_ptr_;
 
 	int controller_freq;
 	ros::Timer timer;
@@ -73,20 +79,27 @@ FormationController::FormationController(std::string name)
 	pn.param("k_p", k_p, 2.0);
 	pn.param("test_goal_x", test_goal_x, 5.0);
 	pn.param("test_goal_y", test_goal_y, 5.0);
+	pn.param("group_size", group_size, 1);
 	pn.param<std::string>("agent_name", agent_name, "robot");
 	// ROS_INFO("controller param:\n controller_freq=%d\n k_p=%f\n goal=(%f,%f)",controller_freq,k_p,test_goal_x,test_goal_y);
 
+	group_global_goal.resize(3,group_size);
+	all_agent_poses.resize(3,group_size);
+
+	path_tracking_ptr_ = boost::shared_ptr<Path_tracking>(new Path_tracking);
+
 	// cmd_pub=n.advertise<geometry_msgs::Twist>("/robot_1/cmd_vel", 10); 
-	cmd_pub=n.advertise<geometry_msgs::Twist>(agent_name+"/cmd_vel", 10); 
+	cmd_pub=n.advertise<geometry_msgs::Twist>("/cmd_vel", 10); //agent_name+
 	data_pub=n.advertise<multi_agent::data>(agent_name+"/data", 10); 
+	center_odom_pub=n.advertise<nav_msgs::Odometry>("/center_odom", 10); 
 	local_goal_sub=n.subscribe("/local_goal", 1, &FormationController::local_goalCB, this);
 	group_global_goal_sub=n.subscribe("/global_goal", 1, &FormationController::global_goalCB, this);
 
 	agent_name.erase(0,6);
 	agent_id=std::atoi(agent_name.c_str());
 	ROS_WARN("agent_id:%d",agent_id);
-	//subscribe to self pose
-	agent_pose_subs.push_back(n.subscribe<nav_msgs::Odometry>("/agent"+ std::to_string(agent_id)+"/odom", 1,boost::bind(&FormationController::agent_poseCB,this, _1,agent_id)));
+	//subscribe to self pose "/agent"+ std::to_string(agent_id)+
+	agent_pose_subs.push_back(n.subscribe<nav_msgs::Odometry>("/odom", 1,boost::bind(&FormationController::agent_poseCB,this, _1,agent_id)));
 
 	timer = n.createTimer(ros::Duration((1.0)/controller_freq), &FormationController::control_loopCB, this);
 
@@ -103,8 +116,8 @@ void FormationController::global_goalCB(const multi_agent::group_global_goal& go
 {
 	
 	group_size=goal.id.size();
-	group_global_goal.resize(3,group_size);
-	all_agent_poses.resize(3,group_size);
+	// group_global_goal.resize(3,group_size);
+	// all_agent_poses.resize(3,group_size);
 	for(int each_id:goal.id)
 	{
 		//build group_global_goal Matrix
@@ -133,7 +146,10 @@ void FormationController::agent_poseCB(const nav_msgs::Odometry::ConstPtr& pose,
 	nav_msgs::Odometry _pose=*pose;
 	// self pose
 	if(id==agent_id)
+	{
 		agent_pose=PoseSE2(_pose.pose.pose);
+		agent_pose_nav=_pose;
+	}
 	//neighbour's pose
 	all_agent_poses.col(id)<<_pose.pose.pose.position.x,_pose.pose.pose.position.y,_pose.pose.pose.orientation.z;
 	
@@ -141,9 +157,19 @@ void FormationController::agent_poseCB(const nav_msgs::Odometry::ConstPtr& pose,
 
 void FormationController::control_loopCB(const ros::TimerEvent&)
 {
+	//计算中点
+	PoseSE2 center_pose=calculate_center_pose();
+	nav_msgs::Odometry center_odom;
+	center_odom=agent_pose_nav;
+	center_odom.pose.pose.position.x=center_pose.x();
+	center_odom.pose.pose.position.y=center_pose.y();
+	center_odom_pub.publish(center_odom);
 	// test
-	local_goal=PoseSE2(test_goal_x,test_goal_y,0);
-
+	// local_goal=PoseSE2(test_goal_x,test_goal_y,0);
+	PoseSE2 test_goal=path_tracking_ptr_->execute_loop(0.5,center_pose);
+	ROS_INFO("currant goal:%f,%f",test_goal.x(),test_goal.y());
+	local_goal=test_goal;
+	//计算控制输出
 	e_p=local_goal-agent_pose;
 	data.formation_err=e_p.toPointMsg();
 	PoseSE2 interaction_sum=calculate_interaction_sum();
@@ -183,10 +209,20 @@ PoseSE2 FormationController::calculate_interaction_sum()
 	return sum;
 }
 
+PoseSE2 FormationController::calculate_center_pose()
+{
+	PoseSE2 center=PoseSE2(all_agent_poses(0,0),all_agent_poses(1,0),all_agent_poses(2,0));
+	for(int i=0;i<group_size;i++)
+	{
+		center=PoseSE2::average(center,PoseSE2(all_agent_poses(0,i),all_agent_poses(1,i),all_agent_poses(2,i)));
+	}
+	return center;
+}
+}
 int main(int argc, char *argv[])
 {
 	ros::init(argc, argv, "FormationControl");
-	FormationController FCinstance("test_node");
+	multi_agent::FormationController FCinstance("test_node");
 	ros::spin();
     return 0;
 }

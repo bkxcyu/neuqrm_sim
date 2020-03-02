@@ -1,4 +1,6 @@
 <launch>
+
+    <arg name="group_size" default="1"/>
     <!--load world-->
     <param name="robot_description" command="$(find xacro)/xacro.py '$(find omni_description)/urdf/cheng.urdf.xacro'"/>
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
@@ -11,7 +13,7 @@
     </include>
     <!--load global formation publisher-->
     <node  pkg="multi_agent" type="global_formation_publisher" name="global_formation_publisher"  >
-        <param name="group_size" value="3"/>　
+        <param name="group_size" value="$(arg group_size)"/>　
         <param name="test_mode" value="ture"/>
     </node>
     <!-- Spawn simulated agents -->
@@ -21,6 +23,7 @@
         <arg name="test_y" value="8.0" />
         <arg name="init_x" value="-8.0" />
         <arg name="init_y" value="1.0" />
+        <arg name="group_size" value="$(arg group_size)" />
     </include>
     <!--<include file="$(find omni_gazebo)/launch/omni_world.launch">
         <arg name="agent_name" value="agent1" />
@@ -28,32 +31,24 @@
         <arg name="test_y" value="8.0" />
         <arg name="init_x" value="-8.0" />
         <arg name="init_y" value="0.0" />
+        <arg name="group_size" value="$(arg group_size)" />
     </include>
     <include file="$(find omni_gazebo)/launch/omni_world.launch">
         <arg name="agent_name" value="agent2" />
         <arg name="test_x" value="10.0" />
         <arg name="test_y" value="8.0" />
         <arg name="init_x" value="-9.0" />
-        <arg name="init_y" value="-1.0" />
+        <arg name="init_y" value="3.0" />
+        <arg name="group_size" value="$(arg group_size)" />
     </include>-->
 
-    <!-- Map server -->
-    <node name="map_server" pkg="map_server" type="map_server" args="$(find multi_agent)/map/maze.yaml"/>
-    <!--<node pkg="rviz" type="rviz" name="rviz" args="-d $(find multi_agent)/rviz/amcl.rviz" />-->
 
-    <!--<node pkg="tf" type="static_transform_publisher" name="map2odom" args="0 0 0 0 -0.1 0  /map /odom   10"/>-->
-    <!-- start robot state publisher -->
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find multi_agent)/map/maze.yaml"/>
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" > </node>
     <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen" >
         <param name="publish_frequency" type="double" value="50.0" />
     </node>
-    <!-- AMCL -->
-    <include file="$(find art_racecar)/launch/includes/amcl.launch.xml">
-        <arg name="init_x" value="-8"/>
-        <arg name="init_y" value="-1.5"/>
-        <arg name="init_a" value="0.325"/>
-    </include>
-    <!-- Navstack -->
+    <node pkg="tf" type="static_transform_publisher" name="odom2map" args="0 0 0 0 0 0  /odom /map   10"/>
     <node pkg="move_base" type="move_base" respawn="false" name="move_base">
         <param name="base_global_planner" value="navfn/NavfnROS"/>  
         <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS"/>  
@@ -62,9 +57,8 @@
         <rosparam file="$(find multi_agent)/param/global_costmap_params.yaml" command="load"/> 
         <rosparam file="$(find multi_agent)/param/base_global_planner_params.yaml" command="load"/>
         <rosparam file="$(find multi_agent)/param/move_base_params.yaml" command="load"/>
-        <!--<remap from="/cmd_vel" to="/agent0/cmd_vel"/>-->
+        <remap from="/cmd_vel" to="/disable_cmd_vel" />
     </node>
-
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find omni_slam)/rviz/mapping.rviz"/>
 
 </launch>

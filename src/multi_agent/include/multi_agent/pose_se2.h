@@ -285,6 +285,15 @@ public:
     return PoseSE2( (pose1._position + pose2._position)/2 , g2o::average_angle(pose1._theta, pose2._theta) );
   }
   
+  double distance(const PoseSE2& p2)const
+  {
+    double distance;
+    PoseSE2 vec;
+    vec._position=p2._position-_position;
+    distance=sqrt(pow(vec.x(),2)+pow(vec.y(),2));
+    return distance;
+  }
+  
   /**
     * @brief Rotate pose globally
     * 
