@@ -1,7 +1,7 @@
 <launch>
-
+    <!--机器人数目 the amount of the agent-->
     <arg name="group_size" default="3"/>
-    <!--load world-->
+    <!--加载gazebo仿真环境 load world-->
     <param name="robot_description" command="$(find xacro)/xacro.py '$(find omni_description)/urdf/cheng.urdf.xacro'"/>
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="world_name" value="$(find omni_gazebo)/worlds/clearpath_playpen.world"/>
@@ -11,16 +11,19 @@
         <arg name="headless" value="false"/>
         <arg name="debug" value="false"/>
     </include>
-    <!--load global formation publisher-->
+    <!--队形发布器,用于测试 load global formation publisher（for test）-->
     <node  pkg="multi_agent" type="global_formation_publisher" name="global_formation_publisher"  >
         <param name="group_size" value="$(arg group_size)"/>　
         <param name="test_mode" value="ture"/>
     </node>
-    <!-- Spawn simulated agents -->
+    <!-- 加载机器人实例 Spawn simulated agents -->
     <include file="$(find omni_gazebo)/launch/omni_world.launch">
+        <!--命名格式必须为“agent_” the format mast be"agent_"-->
         <arg name="agent_name" value="agent0" />
+        <!--用于测试 -->
         <arg name="test_x" value="8.0" />
         <arg name="test_y" value="8.0" />
+        <!--机器人初始位置  initial pose of the robot-->
         <arg name="init_x" value="-5.0" />
         <arg name="init_y" value="0.0" />
         <arg name="group_size" value="$(arg group_size)" />
@@ -41,11 +44,11 @@
         <arg name="init_y" value="1.0" />
         <arg name="group_size" value="$(arg group_size)" />
     </include>
-
-
+    <!--加载地图 load map-->
     <node name="map_server" pkg="map_server" type="map_server" args="$(find multi_agent)/map/big_maze.yaml"/>
-
+    <!--发布/odom与/map之间的坐标转换 publish static transform,form /odom to /map-->
     <node pkg="tf" type="static_transform_publisher" name="odom2map" args="0 0 0 0 0 0  /odom /map   10"/>
+    <!--路径规划-->
     <node pkg="move_base" type="move_base" respawn="false" name="move_base">
         <param name="base_global_planner" value="navfn/NavfnROS"/>  
         <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS"/>  
@@ -57,6 +60,7 @@
         <remap from="/cmd_vel" to="/disable_cmd_vel" />
         <remap from="/odom" to="/center_odom" />
     </node>
+    <!--rviz-->
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find omni_slam)/rviz/mapping.rviz"/>
 
 </launch>

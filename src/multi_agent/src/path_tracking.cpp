@@ -28,7 +28,6 @@ bool Path_tracking::get_local_goal(const PoseSE2& currant_odom_pose)
         local_goal=currant_odom_pose;
         return succeed;
     }
-
     for(geometry_msgs::PoseStamped each_path_point:map_path.poses)
     {
         geometry_msgs::PoseStamped path_point_odom;
