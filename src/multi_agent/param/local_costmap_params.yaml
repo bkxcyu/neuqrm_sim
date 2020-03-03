@@ -18,12 +18,12 @@ local_costmap:
     track_unknown_space: false
 
     plugins:            
-        - {name: sensor,    type: "costmap_2d::ObstacleLayer"}
+        # - {name: sensor,    type: "costmap_2d::ObstacleLayer"}
         - {name: inflation, type: "costmap_2d::InflationLayer"}
 
-    sensor:
-        observation_sources: laser_scan_sensor
-        laser_scan_sensor: {sensor_frame: laser, data_type: LaserScan, topic: scan, marking: true, clearing: true}
+    # sensor:
+    #     observation_sources: laser_scan_sensor
+    #     laser_scan_sensor: {sensor_frame: laser, data_type: LaserScan, topic: scan, marking: true, clearing: true}
 
     inflation:
         inflation_radius: 0.1

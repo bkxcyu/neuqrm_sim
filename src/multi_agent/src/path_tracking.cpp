@@ -47,7 +47,7 @@ bool Path_tracking::get_local_goal(const PoseSE2& currant_odom_pose)
         if(dis>=Lfw)
         {
             local_goal=PoseSE2(path_point_odom);
-            ROS_INFO("have caught a path point as local goal");
+            // ROS_INFO("local_goal:%f,%f",local_goal.x(),local_goal.y());
             succeed=true;
         }
         if(succeed)
@@ -59,7 +59,10 @@ PoseSE2 Path_tracking::execute_loop(const double& currant_vel,const PoseSE2& cur
 {
     get_Lfw(currant_vel);
     if(!get_local_goal(currant_odom_pose))
-        ROS_WARN("failed to catch local goal,now use last local goal");
+    {
+        // ROS_WARN("failed to catch local goal,now use last local goal");
+        ;
+    }
     return local_goal;
 }
 }

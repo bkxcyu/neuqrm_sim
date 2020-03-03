@@ -40,14 +40,27 @@ GlobalFormationPublisher::GlobalFormationPublisher()
     timer = n.createTimer(ros::Duration((1.0)/testpub_freq), &GlobalFormationPublisher::testpub_loopCB, this);
     if(test_mode)
     {
-        for(int i=0;i<group_size;i++)
-        {
-            ggg.id.push_back(i);
-            geometry_msgs::PoseStamped pose_spawn;
-            pose_spawn.pose.position.x=8+i;
-            pose_spawn.pose.position.y=8;
-            ggg.poses.push_back(pose_spawn);
-        }
+        ggg.id.push_back(0);
+        geometry_msgs::PoseStamped pose_spawn;
+        pose_spawn.pose.position.x=-0.3;
+        pose_spawn.pose.position.y=0;
+        ggg.poses.push_back(pose_spawn);
+        ggg.id.push_back(1);
+        pose_spawn.pose.position.x=0.2;
+        pose_spawn.pose.position.y=-0.3;
+        ggg.poses.push_back(pose_spawn);
+        ggg.id.push_back(2);
+        pose_spawn.pose.position.x=0.2;
+        pose_spawn.pose.position.y=0.3;
+        ggg.poses.push_back(pose_spawn);
+        // for(int i=0;i<group_size;i++)
+        // {
+        //     ggg.id.push_back(i);
+        //     geometry_msgs::PoseStamped pose_spawn;
+        //     pose_spawn.pose.position.x=0.5*i-1;
+        //     pose_spawn.pose.position.y=0;
+        //     ggg.poses.push_back(pose_spawn);
+        // }
     }
 }
 
