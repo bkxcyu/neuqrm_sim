@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<launch>
+  <!--args-->
+  <arg name="test_x" default="0.0"/>
+  <arg name="test_y" default="0.0"/>
+  <arg name="init_x" default="0.0"/>
+  <arg name="init_y" default="0.0"/>
+  <arg name="init_z" default="0.0"/>
+  <arg name="agent_name" default="agent0"/>
+  <arg name="group_size" default="1"/>
+  <!--group-->
+  <group ns="$(arg agent_name)">
+    <!--编队控制器 formation controller-->
+    <node  pkg="multi_agent" type="FormationControl_pub" name="FormationControl_pub" output="screen" >
+        <param name="controller_freq" value="100"/>　
+        <param name="k_p" value="4.0"/>
+        <param name="test_goal_x" value="$(arg test_x)"/>
+        <param name="test_goal_y" value="$(arg test_y)"/>
+        <param name="agent_name"  value="/$(arg agent_name)"/>
+        <param name="group_size"  value="$(arg group_size)"/>
+    </node>
+    <!--用于发布机器人各个link间的坐标转换 Used to publish coordinate conversion between various links of the robot-->
+    <!--<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" > </node>
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen" >
+        <param name="publish_frequency" type="double" value="50.0" />
+    </node>-->
+    <!--加载机器人描述文件  Load the robot description file -->
+    <param name="robot_description" command="$(find xacro)/xacro.py '$(find omni_description)/urdf/cheng.urdf.xacro'"/>    
+    <node 
+      name="robot_spawn" 
+      pkg="gazebo_ros" 
+      type="spawn_model" 
+      respawn="false"
+      output="screen" 
+      args="
+      -urdf 
+      -param robot_description 
+      -model $(arg agent_name) 
+      -x $(arg init_x) 
+      -y $(arg init_y) 
+      -z 0.1
+      -roll 0.0
+      -pitch 0.0
+      -yaw 0.0"/>
+
+   </group>
+</launch>
