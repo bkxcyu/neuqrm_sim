@@ -95,6 +95,7 @@ FormationController::FormationController(std::string name)
 	agent_pose_subs.push_back(n.subscribe<nav_msgs::Odometry>("/agent"+ std::to_string(agent_id)+"/odom", 1,boost::bind(&FormationController::agent_poseCB,this, _1,agent_id)));
 	//控制循环 control loop
 	timer = n.createTimer(ros::Duration((1.0)/controller_freq), &FormationController::control_loopCB, this);
+	ros::Duration(5.0).sleep();
 }
 void FormationController::local_goalCB(const geometry_msgs::PoseStamped& goal)
 {//局部目标的回调函数（弃用） Callback function for local target (deprecated)
@@ -155,7 +156,6 @@ void FormationController::control_loopCB(const ros::TimerEvent&)
 	local_goal=PoseSE2(p_star(0,agent_id),p_star(1,agent_id),p_star(2,agent_id));
 	//计算控制输出 Calculate control output                u=k_p*e_p+k_p*\sum_{mathfrak{N}_i}{\omega}_{ij}{p_j-p_i-p_j^*+p_i^*}
 	e_p=local_goal-agent_pose;
-	data.formation_err=e_p.toPointMsg();
 	PoseSE2 interaction_sum=calculate_interaction_sum();
 	u=k_p*e_p+k_p*interaction_sum;
 	//发布控制输出 publish control output
@@ -165,6 +165,8 @@ void FormationController::control_loopCB(const ros::TimerEvent&)
 	vel_pub.angular.z=u.theta();
 	cmd_pub.publish(vel_pub);
 	//发布误差 publish error
+	data.formation_err=e_p.length();
+	data.group_err=interaction_sum.length();
 	data_pub.publish(data);
 }
 PoseSE2 FormationController::calculate_interaction_sum()
@@ -183,7 +185,6 @@ PoseSE2 FormationController::calculate_interaction_sum()
 		MatrixXd S=A-B;
 		sum+=PoseSE2(S(0,0),S(1,0),S(2,0));
 	}
-	data.group_err=sum.toPointMsg();
 	return sum;
 }
 PoseSE2 FormationController::calculate_center_pose()

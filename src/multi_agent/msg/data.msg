@@ -1,2 +1,2 @@
-geometry_msgs/Point  formation_err
-geometry_msgs/Point  group_err
+float64  formation_err
+float64  group_err

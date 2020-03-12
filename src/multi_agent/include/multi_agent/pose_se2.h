@@ -294,6 +294,10 @@ public:
     return distance;
   }
   
+  double length()const
+  {
+    return sqrt(pow(_position.x(),2)+pow(_position.y(),2));
+  }
   /**
     * @brief Rotate pose globally
     * 

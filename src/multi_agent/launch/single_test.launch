@@ -24,7 +24,7 @@
         <arg name="test_x" value="8.0" />
         <arg name="test_y" value="8.0" />
         <!--机器人初始位置  initial pose of the robot-->
-        <arg name="init_x" value="-5.0" />
+        <arg name="init_x" value="-1.0" />
         <arg name="init_y" value="0.0" />
         <arg name="group_size" value="$(arg group_size)" />
     </include>
@@ -33,7 +33,7 @@
         <arg name="test_x" value="9.0" />
         <arg name="test_y" value="8.0" />
         <arg name="init_x" value="1.0" />
-        <arg name="init_y" value="-5.0" />
+        <arg name="init_y" value="-1.0" />
         <arg name="group_size" value="$(arg group_size)" />
     </include>
     <include file="$(find omni_gazebo)/launch/omni_world.launch">

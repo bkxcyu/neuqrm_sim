@@ -16,7 +16,7 @@ void Path_tracking::get_Lfw(const double& currant_vel)
     if(currant_vel<1)
         Lfw=0.5;
     if(currant_vel>=1&&currant_vel<=2)
-        Lfw=1.0;
+        Lfw=1.25;
     if(currant_vel>2)
         Lfw=2.0; 
 }
