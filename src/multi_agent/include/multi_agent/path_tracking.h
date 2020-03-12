@@ -12,8 +12,8 @@
 #include <sstream>
 #include <iostream>
 #include "multi_agent/pose_se2.h"
-#include "multi_agent/group_global_goal.h"
-#include "multi_agent/data.h"
+// #include "multi_agent/group_global_goal.h"
+// #include "multi_agent/data.h"
 #include <nav_msgs/Odometry.h>
 #include "nav_msgs/Path.h"
 #include <boost/bind.hpp>
