@@ -12,8 +12,8 @@
   <group ns="$(arg agent_name)">
     <!--编队控制器 formation controller-->
     <node  pkg="multi_agent" type="FormationControl_pub" name="FormationControl_pub" output="screen" >
-        <param name="controller_freq" value="100"/>　
-        <param name="k_p" value="4.0"/>
+        <param name="controller_freq" value="10"/>　
+        <param name="k_p" value="1.0"/>
         <param name="test_goal_x" value="$(arg test_x)"/>
         <param name="test_goal_y" value="$(arg test_y)"/>
         <param name="agent_name"  value="/$(arg agent_name)"/>

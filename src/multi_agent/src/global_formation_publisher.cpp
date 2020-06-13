@@ -46,14 +46,14 @@ GlobalFormationPublisher::GlobalFormationPublisher()
         pose_spawn.pose.position.x=-1.0*scale;
         pose_spawn.pose.position.y=0;
         ggg.poses.push_back(pose_spawn);
-        ggg.id.push_back(1);
-        pose_spawn.pose.position.x=0.5*scale;
-        pose_spawn.pose.position.y=-0.866*scale;
-        ggg.poses.push_back(pose_spawn);
-        ggg.id.push_back(2);
-        pose_spawn.pose.position.x=0.5*scale;
-        pose_spawn.pose.position.y=0.866*scale;
-        ggg.poses.push_back(pose_spawn);
+        // ggg.id.push_back(1);
+        // pose_spawn.pose.position.x=0.5*scale;
+        // pose_spawn.pose.position.y=-0.866*scale;
+        // ggg.poses.push_back(pose_spawn);
+        // ggg.id.push_back(2);
+        // pose_spawn.pose.position.x=0.5*scale;
+        // pose_spawn.pose.position.y=0.866*scale;
+        // ggg.poses.push_back(pose_spawn);
         // for(int i=0;i<group_size;i++)
         // {
         //     ggg.id.push_back(i);

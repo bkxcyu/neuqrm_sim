@@ -1,13 +1,13 @@
 <launch>
     <!--机器人数目 the amount of the agent-->
-    <arg name="group_size" default="3"/>
+    <arg name="group_size" default="1"/>
     <!--加载gazebo仿真环境 load world-->
     <param name="robot_description" command="$(find xacro)/xacro.py '$(find omni_description)/urdf/cheng.urdf.xacro'"/>
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
         <arg name="world_name" value="$(find omni_gazebo)/worlds/clearpath_playpen.world"/>
         <arg name="paused" value="false"/>
         <arg name="use_sim_time" value="true"/>
-        <arg name="gui" value="true"/>
+        <arg name="gui" value="false"/>
         <arg name="headless" value="false"/>
         <arg name="debug" value="false"/>
     </include>
@@ -28,7 +28,7 @@
         <arg name="init_y" value="0.0" />
         <arg name="group_size" value="$(arg group_size)" />
     </include>
-    <include file="$(find omni_gazebo)/launch/omni_world.launch">
+    <!--<include file="$(find omni_gazebo)/launch/omni_world.launch">
         <arg name="agent_name" value="agent1" />
         <arg name="test_x" value="9.0" />
         <arg name="test_y" value="8.0" />
@@ -43,7 +43,7 @@
         <arg name="init_x" value="1.0" />
         <arg name="init_y" value="1.0" />
         <arg name="group_size" value="$(arg group_size)" />
-    </include>
+    </include>-->
     <!--加载地图 load map-->
     <node name="map_server" pkg="map_server" type="map_server" args="$(find multi_agent)/map/big_maze.yaml"/>
     <!--发布/odom与/map之间的坐标转换 publish static transform,form /odom to /map-->

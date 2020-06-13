@@ -165,7 +165,7 @@ void FormationController::control_loopCB(const ros::TimerEvent&)
 	vel_pub.angular.z=u.theta();
 	cmd_pub.publish(vel_pub);
 	//发布误差 publish error
-	data.formation_err=e_p.length();
+	data.formation_err=e_p.length()-0.09;
 	data.group_err=interaction_sum.length();
 	data_pub.publish(data);
 }
