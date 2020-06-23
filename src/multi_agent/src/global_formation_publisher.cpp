@@ -42,17 +42,21 @@ GlobalFormationPublisher::GlobalFormationPublisher()
     {
         ggg.id.push_back(0);
         geometry_msgs::PoseStamped pose_spawn;
-        pose_spawn.pose.position.x=-0.3;
-        pose_spawn.pose.position.y=0;
+        pose_spawn.pose.position.x=-0.5;
+        pose_spawn.pose.position.y=0.5;
         ggg.poses.push_back(pose_spawn);
         ggg.id.push_back(1);
-        pose_spawn.pose.position.x=0.2;
-        pose_spawn.pose.position.y=-0.3;
+        pose_spawn.pose.position.x=0.5;
+        pose_spawn.pose.position.y=0.5;
         ggg.poses.push_back(pose_spawn);
         ggg.id.push_back(2);
-        pose_spawn.pose.position.x=0.2;
-        pose_spawn.pose.position.y=0.3;
+        pose_spawn.pose.position.x=0.5;
+        pose_spawn.pose.position.y=-0.5;
         ggg.poses.push_back(pose_spawn);
+        // ggg.id.push_back(3);
+        // pose_spawn.pose.position.x=-0.5;
+        // pose_spawn.pose.position.y=-0.5;
+        // ggg.poses.push_back(pose_spawn);
         // for(int i=0;i<group_size;i++)
         // {
         //     ggg.id.push_back(i);
