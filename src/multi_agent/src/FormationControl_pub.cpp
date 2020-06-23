@@ -158,7 +158,12 @@ void FormationController::control_loopCB(const ros::TimerEvent&)
 	e_p=local_goal-agent_pose;
 	data.formation_err=e_p.toPointMsg();
 	PoseSE2 interaction_sum=calculate_interaction_sum();
-	u=k_p*e_p+k_p*interaction_sum;
+	double g_i;
+	if(agent_id==0)
+		g_i=1;
+	else
+		g_i=0;
+	u=g_i*k_p*e_p+k_p*interaction_sum;
 	// u=k_p*interaction_sum;
 	//发布控制输出 publish control output
 	geometry_msgs::Twist vel_pub;
