@@ -154,17 +154,16 @@ void FormationController::control_loopCB(const ros::TimerEvent&)
 	// MatrixXd p_star=bar_p_star*E+mathfrac_p_star-(mathfrac_p_star*E_T*E)/group_size;
 	// local_goal=PoseSE2(p_star(0,agent_id),p_star(1,agent_id),p_star(2,agent_id));
 	//计算控制输出 Calculate control output                u=k_p*e_p+k_p*\sum_{mathfrak{N}_i}{\omega}_{ij}{p_j-p_i-p_j^*+p_i^*}
+	
+	//gama(norm(p_j-p_i))=k_p(norm(p_j-p_i)^2+norm(p_j^*-p_i^*)^2)^2
+	//p^*
 	local_goal=PoseSE2(group_global_goal(0,agent_id),group_global_goal(1,agent_id),group_global_goal(2,agent_id));
+	//p_i^*+p_i
 	e_p=local_goal-agent_pose;
 	data.formation_err=e_p.toPointMsg();
 	PoseSE2 interaction_sum=calculate_interaction_sum();
-	double g_i;
-	if(agent_id==0)
-		g_i=1;
-	else
-		g_i=0;
-	u=g_i*k_p*e_p+k_p*interaction_sum;
-	// u=k_p*interaction_sum;
+	// u=k_p*e_p+k_p*interaction_sum;
+	u=k_p*interaction_sum;
 	//发布控制输出 publish control output
 	geometry_msgs::Twist vel_pub;
 	vel_pub.linear.x=u.x();
@@ -182,12 +181,16 @@ PoseSE2 FormationController::calculate_interaction_sum()
 		//排除自身
 		if(i==agent_id)
 			continue;
-		//B=p_j^*-p_i^*
-		MatrixXd B=group_global_goal.col(i)-group_global_goal.col(agent_id);
-		//A=p_j-p_i
-		MatrixXd A=all_agent_poses.col(i)-all_agent_poses.col(agent_id);
-		//S=A-B
-		MatrixXd S=A-B;
+		//p_j-p_i
+		MatrixXd p_ij=all_agent_poses.col(i)-all_agent_poses.col(agent_id);
+		//p_j^*-p_i^*
+		MatrixXd p_ij_star=group_global_goal.col(i)-group_global_goal.col(agent_id);
+		//Dgama
+		double Dgama=4*pow(p_ij.norm(),3)-4*(p_ij.norm())*pow(p_ij_star.norm(),2);
+		if(std::isnan(Dgama))
+			Dgama=0;
+		// ROS_INFO("Dgama_%d=%0.2f",agent_id,Dgama);
+		MatrixXd S=Dgama*(p_ij/p_ij.norm());
 		sum+=PoseSE2(S(0,0),S(1,0),S(2,0));
 	}
 	data.group_err=sum.toPointMsg();
