@@ -135,29 +135,31 @@ void FormationController::agent_poseCB(const nav_msgs::Odometry::ConstPtr& pose,
 }
 void FormationController::control_loopCB(const ros::TimerEvent&)
 {//主循环 main loop
-	//计算中点 calculate center pose
-	PoseSE2 center_pose=calculate_center_pose();
-	//发布中点，move_base将会以中点为起点规划路径 publish it.move_base would use it for Path planning.
-	nav_msgs::Odometry center_odom;
-	center_odom=agent_pose_nav;
-	center_odom.pose.pose.position.x=center_pose.x();
-	center_odom.pose.pose.position.y=center_pose.y();
-	center_odom_pub.publish(center_odom);
-	//计算局部目标点 Calculate the local target point      \bar{p}^*
-	PoseSE2 bar_p_star_se2=path_tracking_ptr_->execute_loop(2,center_pose);
-	//计算分布  Calculate distribution                     p^*=\bar{p}^* E+\mathfrac{p}^*-1/N \mathfrac{p}^* E^T E
-	MatrixXd E=MatrixXd::Ones(1,group_size);
-	MatrixXd E_T=E.transpose();
-	MatrixXd bar_p_star(3,1);
-	bar_p_star<<bar_p_star_se2.x(),bar_p_star_se2.y(),bar_p_star_se2.theta();
-	MatrixXd mathfrac_p_star=group_global_goal;
-	MatrixXd p_star=bar_p_star*E+mathfrac_p_star-(mathfrac_p_star*E_T*E)/group_size;
-	local_goal=PoseSE2(p_star(0,agent_id),p_star(1,agent_id),p_star(2,agent_id));
+	// //计算中点 calculate center pose
+	// PoseSE2 center_pose=calculate_center_pose();
+	// //发布中点，move_base将会以中点为起点规划路径 publish it.move_base would use it for Path planning.
+	// nav_msgs::Odometry center_odom;
+	// center_odom=agent_pose_nav;
+	// center_odom.pose.pose.position.x=center_pose.x();
+	// center_odom.pose.pose.position.y=center_pose.y();
+	// center_odom_pub.publish(center_odom);
+	// //计算局部目标点 Calculate the local target point      \bar{p}^*
+	// PoseSE2 bar_p_star_se2=path_tracking_ptr_->execute_loop(2,center_pose);
+	// //计算分布  Calculate distribution                     p^*=\bar{p}^* E+\mathfrac{p}^*-1/N \mathfrac{p}^* E^T E
+	// MatrixXd E=MatrixXd::Ones(1,group_size);
+	// MatrixXd E_T=E.transpose();
+	// MatrixXd bar_p_star(3,1);
+	// bar_p_star<<bar_p_star_se2.x(),bar_p_star_se2.y(),bar_p_star_se2.theta();
+	// MatrixXd mathfrac_p_star=group_global_goal;
+	// MatrixXd p_star=bar_p_star*E+mathfrac_p_star-(mathfrac_p_star*E_T*E)/group_size;
+	// local_goal=PoseSE2(p_star(0,agent_id),p_star(1,agent_id),p_star(2,agent_id));
 	//计算控制输出 Calculate control output                u=k_p*e_p+k_p*\sum_{mathfrak{N}_i}{\omega}_{ij}{p_j-p_i-p_j^*+p_i^*}
+	local_goal=PoseSE2(group_global_goal(0,agent_id),group_global_goal(1,agent_id),group_global_goal(2,agent_id));
 	e_p=local_goal-agent_pose;
 	data.formation_err=e_p.toPointMsg();
 	PoseSE2 interaction_sum=calculate_interaction_sum();
 	u=k_p*e_p+k_p*interaction_sum;
+	// u=k_p*interaction_sum;
 	//发布控制输出 publish control output
 	geometry_msgs::Twist vel_pub;
 	vel_pub.linear.x=u.x();

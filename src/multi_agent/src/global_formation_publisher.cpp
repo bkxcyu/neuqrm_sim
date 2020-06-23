@@ -42,16 +42,16 @@ GlobalFormationPublisher::GlobalFormationPublisher()
     {
         ggg.id.push_back(0);
         geometry_msgs::PoseStamped pose_spawn;
-        pose_spawn.pose.position.x=-0.5;
-        pose_spawn.pose.position.y=0.5;
+        pose_spawn.pose.position.x=8;
+        pose_spawn.pose.position.y=1;
         ggg.poses.push_back(pose_spawn);
         ggg.id.push_back(1);
-        pose_spawn.pose.position.x=0.5;
-        pose_spawn.pose.position.y=0.5;
+        pose_spawn.pose.position.x=8;
+        pose_spawn.pose.position.y=0;
         ggg.poses.push_back(pose_spawn);
         ggg.id.push_back(2);
-        pose_spawn.pose.position.x=0.5;
-        pose_spawn.pose.position.y=-0.5;
+        pose_spawn.pose.position.x=8;
+        pose_spawn.pose.position.y=-1;
         ggg.poses.push_back(pose_spawn);
         // ggg.id.push_back(3);
         // pose_spawn.pose.position.x=-0.5;

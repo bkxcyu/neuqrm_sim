@@ -7,7 +7,7 @@
         <arg name="world_name" value="$(find omni_gazebo)/worlds/box.world"/>
         <arg name="paused" value="false"/>
         <arg name="use_sim_time" value="true"/>
-        <arg name="gui" value="false"/>
+        <arg name="gui" value="true"/>
         <arg name="headless" value="false"/>
         <arg name="debug" value="false"/>
     </include>
@@ -24,24 +24,24 @@
         <arg name="test_x" value="8.0" />
         <arg name="test_y" value="8.0" />
         <!--机器人初始位置  initial pose of the robot-->
-        <arg name="init_x" value="-0.5" />
-        <arg name="init_y" value="0.5" />
+        <arg name="init_x" value="2.0" />
+        <arg name="init_y" value="0.0" />
         <arg name="group_size" value="$(arg group_size)" />
     </include>
     <include file="$(find omni_gazebo)/launch/omni_world.launch">
         <arg name="agent_name" value="agent1" />
         <arg name="test_x" value="9.0" />
         <arg name="test_y" value="8.0" />
-        <arg name="init_x" value="0.5" />
-        <arg name="init_y" value="0.5" />
+        <arg name="init_x" value="0.0" />
+        <arg name="init_y" value="0.0" />
         <arg name="group_size" value="$(arg group_size)" />
     </include>
     <include file="$(find omni_gazebo)/launch/omni_world.launch">
         <arg name="agent_name" value="agent2" />
         <arg name="test_x" value="10.0" />
         <arg name="test_y" value="8.0" />
-        <arg name="init_x" value="0.5" />
-        <arg name="init_y" value="-0.5" />
+        <arg name="init_x" value="-2.0" />
+        <arg name="init_y" value="0.0" />
         <arg name="group_size" value="$(arg group_size)" />
     </include>
     <!--<include file="$(find omni_gazebo)/launch/omni_world.launch">
@@ -57,7 +57,7 @@
     <!--发布/odom与/map之间的坐标转换 publish static transform,form /odom to /map-->
     <node pkg="tf" type="static_transform_publisher" name="odom2map" args="0 0 0 0 0 0  /odom /map   10"/>
     <!--路径规划-->
-    <node pkg="move_base" type="move_base" respawn="false" name="move_base">
+    <!--<node pkg="move_base" type="move_base" respawn="false" name="move_base">
         <param name="base_global_planner" value="navfn/NavfnROS"/>  
         <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS"/>  
         <rosparam file="$(find multi_agent)/param/dwa_local_planner_params.yaml" command="load"/>
@@ -67,7 +67,7 @@
         <rosparam file="$(find multi_agent)/param/move_base_params.yaml" command="load"/>
         <remap from="/cmd_vel" to="/disable_cmd_vel" />
         <remap from="/odom" to="/center_odom" />
-    </node>
+    </node>-->
     <!--rviz-->
     <node name="rviz" pkg="rviz" type="rviz" args="-d $(find omni_slam)/rviz/mapping.rviz"/>
 
